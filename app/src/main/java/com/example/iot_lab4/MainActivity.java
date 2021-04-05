@@ -41,10 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode == RECOGNIZER_RESULT && resultCode == RESULT_OK) {
-            ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            speechText.setText(matches.get(0).toString());
-        }
+        ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+        speechText.setText(matches.get(0).toString());
 
         super.onActivityResult(requestCode, resultCode, data);
     }
