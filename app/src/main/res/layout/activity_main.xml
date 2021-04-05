@@ -9,19 +9,23 @@
     <Button
         android:id="@+id/speechButton"
         android:layout_width="167dp"
-        android:layout_height="55dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="233dp"
         android:text="Tap to Talk"
-        tools:layout_editor_absoluteX="126dp"
-        tools:layout_editor_absoluteY="449dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="122dp" />
 
     <EditText
         android:id="@+id/speechText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="395dp"
+        android:layout_height="84dp"
+        android:layout_marginTop="199dp"
+        android:layout_marginBottom="205dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Name"
-        tools:layout_editor_absoluteX="100dp"
-        tools:layout_editor_absoluteY="199dp" />
+        app:layout_constraintBottom_toTopOf="@+id/speechButton"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="8dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
