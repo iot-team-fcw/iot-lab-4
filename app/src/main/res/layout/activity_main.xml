@@ -8,12 +8,13 @@
 
     <Button
         android:id="@+id/speechButton"
-        android:layout_width="167dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="233dp"
         android:text="Tap to Talk"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="122dp" />
+        app:layout_constraintBottom_toTopOf="@+id/button_on"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/speechText"
@@ -27,5 +28,25 @@
         app:layout_constraintBottom_toTopOf="@+id/speechButton"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="8dp" />
+
+    <Button
+        android:id="@+id/button_on"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="LED ON"
+        app:layout_constraintBottom_toTopOf="@+id/button_off"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/button_off"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="200dp"
+        android:text="LED OFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
