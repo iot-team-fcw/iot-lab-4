@@ -41,6 +41,9 @@ s.settimeout(0.5)
 s.bind(('', 80)) #empty string is localhost
 s.listen(3)
 
+display = True
+command = ""
+
 #Listen for incoming commands from the phone (client)
 while True:
 
@@ -52,6 +55,7 @@ while True:
   hours = now[4]
   output = "Time: " + str(hours) + ":" + str(minutes) + "." + str(seconds)
   oled.text(output, 0, 0)
+  
 
   try:
     #Accept incoming Connection
@@ -69,14 +73,18 @@ while True:
     val = -1             # Finding nth occurrence of substring
     for i in range(0, occurrence):
       val = request.find(sub_str, val + 1)
-    command = request[16:val]
-    command = command.replace("%20", " ")
+
+    if (request != ""):
+      command = request[16:val]
+      command = command.replace("%20", " ")
 
     #Process Command
     if (command == "on"):
       oled.show()
+      display = True
     elif (command == "off"):
       oled.fill(0)
+      display = False
       oled.show()
     else:
       #Show Command
@@ -104,9 +112,13 @@ while True:
   except OSError:
     pass
 
+  if (display):
+    oled.show()
+  else:
+    oled.fill(0)
 
-  oled.show()
-  time.sleep(0.5)
+oled.text("Cmnd: " + command, 0, 10)
+time.sleep(0.5)
 
 
 
