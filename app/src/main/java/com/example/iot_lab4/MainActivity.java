@@ -5,10 +5,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.speech.RecognizerIntent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,10 +26,33 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int RECOGNIZER_RESULT = 1;
 
+    protected boolean sendPost(String urla, String name, String value) {
+        try {
+            URL url = new URL(urla + "?" + name + "=" + value);
+
+            HttpURLConnection urlc = (HttpURLConnection) url.openConnection();
+            urlc.setRequestProperty("Connection", "close");
+            urlc.setConnectTimeout(1000 * 5); // mTimeout is in seconds
+            urlc.connect();
+
+            if (urlc.getResponseCode() == 200) {
+                return new Boolean(true);
+            }
+        } catch (MalformedURLException e1) {
+            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         speechButton = findViewById(R.id.speechButton);
         speechText = findViewById(R.id.speechText);
@@ -43,14 +72,14 @@ public class MainActivity extends AppCompatActivity {
         button_on.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                sendPost("http://35f107597f62.ngrok.io/", "led", "off");
             }
         });
 
         button_off.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                sendPost("http://35f107597f62.ngrok.io/", "led", "on");
             }
         });
     }
