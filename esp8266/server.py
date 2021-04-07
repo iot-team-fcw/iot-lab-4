@@ -12,6 +12,8 @@ import json
 i2c = machine.I2C(-1, machine.Pin(5), machine.Pin(4)) # setup I2C for screen
 oled = ssd1306.SSD1306_I2C(128, 32, i2c)        # setup screen as I2C device
 led = machine.Pin(2, machine.Pin.OUT)
+rtc = machine.RTC() # Using RTC to keep the time
+rtc.datetime((2021, 4, 6, 0, 19, 40, 0, 0))
 
 # Connect ESP8266 to WiFi
 # Example from: http://docs.micropython.org/en/latest/esp8266/tutorial/network_basics.html
@@ -41,10 +43,10 @@ while True:
 
   #Setup time
   oled.fill(0)
-  timeMeasure = time.time()
+  now = rtc.datetime()
   seconds = (timeMeasure) % 60
-  minutes = int((timeMeasure / 60) % 60)
-  hours = int((timeMeasure / 3600) % 24)
+  minutes = now[5]
+  hours = now[4]
   output = "Time: " + str(hours) + ":" + str(minutes) + "." + str(seconds)
   oled.text(output, 0, 0)
 
@@ -76,7 +78,7 @@ while True:
     #Show Command
     oled.text("Cmnd: " + command, 0, 10)
     oled.show()
-  
+
 
   #TOGGLE LIGHTS
   led_on = request.find('/?led=on')
@@ -113,4 +115,3 @@ while True:
 
 
 # Execute: exec(open("server.py").read())
-
