@@ -74,6 +74,7 @@ while True:
     val = request.find(sub_str, val + 1)
 
   command = request[16:val]
+  oled.fill(0)
   oled.text(command, 0, 0)
   oled.show()
 
