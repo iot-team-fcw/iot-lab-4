@@ -3,8 +3,10 @@
 import machine
 import ssd1306
 import time
+import utime
 import network
-import socket
+import usocket as socket
+import uselect as select
 import urequests
 import json
 
@@ -35,8 +37,9 @@ do_connect()
 #Initiate on-board (server) socket
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # s.setblocking(False)
+s.settimeout(0.5)
 s.bind(('', 80)) #empty string is localhost
-s.listen(5)
+s.listen(3)
 
 #Listen for incoming commands from the phone (client)
 while True:
@@ -44,60 +47,62 @@ while True:
   #Setup time
   oled.fill(0)
   now = rtc.datetime()
-  seconds = (timeMeasure) % 60
+  seconds = now[6]
   minutes = now[5]
   hours = now[4]
   output = "Time: " + str(hours) + ":" + str(minutes) + "." + str(seconds)
   oled.text(output, 0, 0)
 
-  #Accept incoming Connection
-  conn, addr = s.accept()
-  print('Got a connection from %s' % str(addr))
+  try:
+    #Accept incoming Connection
+    conn, addr = s.accept()
+    print('Got a connection from %s' % str(addr))
 
-  #parse request
-  request = conn.recv(1024)
-  request = str(request)
-  print('Content = %s' % request)
+    #parse request
+    request = conn.recv(1024)
+    request = str(request)
+    print('Content = %s' % request)
 
-  #Extract Command
-  sub_str = " "
-  occurrence = 2
-  val = -1             # Finding nth occurrence of substring
-  for i in range(0, occurrence):
-    val = request.find(sub_str, val + 1)
-  command = request[16:val]
-  command = command.replace("%20", " ")
+    #Extract Command
+    sub_str = " "
+    occurrence = 2
+    val = -1             # Finding nth occurrence of substring
+    for i in range(0, occurrence):
+      val = request.find(sub_str, val + 1)
+    command = request[16:val]
+    command = command.replace("%20", " ")
 
-  #Process Command
-  if (command == "on"):
-    oled.show()
-  elif (command == "off"):
-    oled.fill(0)
-    oled.show()
-  else:
-    #Show Command
-    oled.text("Cmnd: " + command, 0, 10)
-    oled.show()
-
-
-  #TOGGLE LIGHTS
-  led_on = request.find('/?led=on')
-  led_off = request.find('/?led=off')
-  if led_on == 6:
-    print('LED ON')
-    led.value(1)
-  if led_off == 6:
-    print('LED OFF')
-    led.value(0)
+    #Process Command
+    if (command == "on"):
+      oled.show()
+    elif (command == "off"):
+      oled.fill(0)
+      oled.show()
+    else:
+      #Show Command
+      oled.text("Cmnd: " + command, 0, 10)
+      oled.show()
 
 
-  #GENERATE RESPONSE
-  response = "All Good"
-  conn.send('HTTP/1.1 200 OK\n')
-  conn.send('Content-Type: text/html\n')
-  conn.send('Connection: close\n\n')
-  conn.sendall(response)
-  conn.close()
+    #TOGGLE LIGHTS
+    led_on = request.find('/?led=on')
+    led_off = request.find('/?led=off')
+    if led_on == 6:
+      print('LED ON')
+      led.value(1)
+    if led_off == 6:
+      print('LED OFF')
+      led.value(0)   
+
+    #GENERATE RESPONSE
+    response = "All Good"
+    conn.send('HTTP/1.1 200 OK\n')
+    conn.send('Content-Type: text/html\n')
+    conn.send('Connection: close\n\n')
+    conn.sendall(response)
+    conn.close()
+  except OSError:
+    pass
 
 
   oled.show()
@@ -115,3 +120,7 @@ while True:
 
 
 # Execute: exec(open("server.py").read())
+
+
+
+
