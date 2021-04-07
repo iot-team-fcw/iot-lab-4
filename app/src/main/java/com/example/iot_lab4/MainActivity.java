@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
             urlc.connect();
 
             if (urlc.getResponseCode() == 200) {
+                System.out.println("200 OK");
                 return new Boolean(true);
             }
         } catch (MalformedURLException e1) {
