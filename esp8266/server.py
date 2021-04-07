@@ -74,6 +74,7 @@ while True:
     val = request.find(sub_str, val + 1)
 
   command = request[16:val]
+  command = command.replace("%20", " ")
   oled.fill(0)
   oled.text(command, 0, 0)
   oled.show()
@@ -110,5 +111,5 @@ while True:
 
 
 
-# Execute: exec(open("server.py").read())
+# Execute: exec(open("chp1.py").read())
 
