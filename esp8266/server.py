@@ -30,54 +30,53 @@ def do_connect():
 do_connect()
 
 
-
-def web_page():
-  if led.value() == 0:
-    gpio_state="ON"
-  else:
-    gpio_state="OFF"
-  
-  html = """<html><head> <title>ESP Web Server</title> <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="data:,"> <style>html{font-family: Helvetica; display:inline-block; margin: 0px auto; text-align: center;}
-  h1{color: #0F3376; padding: 2vh;}p{font-size: 1.5rem;}.button{display: inline-block; background-color: #e7bd3b; border: none; 
-  border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
-  .button2{background-color: #4286f4;}</style></head><body> <h1>ESP Web Server</h1> 
-  <p>GPIO state: <strong>""" + gpio_state + """</strong></p><p><a href="/?led=on"><button class="button">ON</button></a></p>
-  <p><a href="/?led=off"><button class="button button2">OFF</button></a></p></body></html>"""
-  return html
-
-
-
-
 #Initiate on-board (server) socket
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# s.setblocking(False)
 s.bind(('', 80)) #empty string is localhost
 s.listen(5)
 
 #Listen for incoming commands from the phone (client)
 while True:
+
+  #Setup time
+  oled.fill(0)
+  timeMeasure = time.time()
+  seconds = (timeMeasure) % 60
+  minutes = int((timeMeasure / 60) % 60)
+  hours = int((timeMeasure / 3600) % 24)
+  output = "Time: " + str(hours) + ":" + str(minutes) + "." + str(seconds)
+  oled.text(output, 0, 0)
+
+  #Accept incoming Connection
   conn, addr = s.accept()
   print('Got a connection from %s' % str(addr))
+
+  #parse request
   request = conn.recv(1024)
   request = str(request)
   print('Content = %s' % request)
 
-  #PARSE FOR COMMAND
-  #INDEX EIGHT UNTIL SECOND SPACE
+  #Extract Command
   sub_str = " "
   occurrence = 2
-  
-  
-  # Finding nth occurrence of substring
-  val = -1
+  val = -1             # Finding nth occurrence of substring
   for i in range(0, occurrence):
     val = request.find(sub_str, val + 1)
-
   command = request[16:val]
   command = command.replace("%20", " ")
-  oled.fill(0)
-  oled.text(command, 0, 0)
-  oled.show()
+
+  #Process Command
+  if (command == "on"):
+    oled.show()
+  elif (command == "off"):
+    oled.fill(0)
+    oled.show()
+  else:
+    #Show Command
+    oled.text("Cmnd: " + command, 0, 10)
+    oled.show()
+  
 
   #TOGGLE LIGHTS
   led_on = request.find('/?led=on')
@@ -89,10 +88,9 @@ while True:
     print('LED OFF')
     led.value(0)
 
+
   #GENERATE RESPONSE
-  response = web_page()
-
-
+  response = "All Good"
   conn.send('HTTP/1.1 200 OK\n')
   conn.send('Content-Type: text/html\n')
   conn.send('Connection: close\n\n')
@@ -100,6 +98,8 @@ while True:
   conn.close()
 
 
+  oled.show()
+  time.sleep(0.5)
 
 
 
@@ -111,5 +111,6 @@ while True:
 
 
 
-# Execute: exec(open("chp1.py").read())
+
+# Execute: exec(open("server.py").read())
 
